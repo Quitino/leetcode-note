@@ -1,0 +1,28 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/q/Documents/leetcode/leetcode-debug/leetcode_debug.cpp
+algorithm
+-
+iostream
+-
+map
+-
+numeric
+-
+queue
+-
+set
+-
+stack
+-
+string
+-
+vector
+-
+
