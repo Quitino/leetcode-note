@@ -1,0 +1,15 @@
+# Jekyll build output
+docs/_site/
+docs/.jekyll-cache/
+docs/.jekyll-metadata
+
+# Bundler
+.bundle/
+vendor/
+
+# Build script
+build_docs.py
+
+# OS
+.DS_Store
+Thumbs.db

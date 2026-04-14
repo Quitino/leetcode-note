@@ -1,0 +1,473 @@
+---
+title: 第06章 二叉查找树
+nav_order: 7
+---
+
+-  **心得：DFS需要终止遍历时，函数就定义为 bool 型**
+
+二分搜索树（英语：Binary Search Tree），也称为 二叉查找树 、二叉搜索树 、有序二叉树或排序二叉树。满足以下几个条件：
+
+- 若它的左子树不为空，左子树上所有节点的值都小于它的根节点。
+
+* 若它的右子树不为空，右子树上所有的节点的值都大于它的根节点。
+- 它的左、右子树也都是二分搜索树。
+
+
+![](../assets/images/chapter06/r-1.png)
+
+
+<font color = red> 中序遍历即是从小到大的排序。</font>
+
+---
+
+将有序数组转换为二叉搜索树
+Category	Difficulty	Likes	Dislikes  
+algorithms	Easy (76.17%)	900	-  
+Tags  
+tree | depth-first-search  
+
+Companies  
+给你一个整数数组 nums ，其中元素已经按 升序 排列，请你将其转换为一棵 高度平衡 二叉搜索树。  
+
+高度平衡 二叉树是一棵满足「每个节点的左右两个子树的高度差的绝对值不超过 1 」的二叉树。  
+
+ 
+
+示例 1：  
+![](../assets/images/chapter06/108-1.png)
+
+
+输入：nums = [-10,-3,0,5,9]  
+输出：[0,-3,9,-10,null,5]  
+解释：[0,-10,5,null,-3,null,9] 也将被视为正确  
+答案：  
+
+![](../assets/images/chapter06/108-2.png)
+
+
+
+
+示例 2：  
+![](../assets/images/chapter06/108-3.png)
+
+
+输入：nums = [1,3]  
+输出：[3,1]  
+解释：[1,3] 和 [3,1] 都是高度平衡二叉搜索树。  
+ 
+
+提示：  
+
+1 <= nums.length <= 104    
+-104 <= nums[i] <= 104  
+nums 按 严格递增 顺序排列  
+Discussion | Solution  
+
+----------------------------------------
+
+```c
+/*
+ * @Date: 2021-12-30 14:23:03
+ * @Author: bFeng
+ */
+/*
+ * @lc app=leetcode.cn id=108 lang=cpp
+ *
+ * [108] 将有序数组转换为二叉搜索树
+ */
+
+// @lc code=start
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+ //---------我不太明白。为什么地址没传出去： TreeNode*&要传指针的引用！！！-------------
+class Solution {
+public:
+    TreeNode* sortedArrayToBST(vector<int>& nums) {
+        if(nums.empty()) return nullptr;
+        TreeNode* root = nullptr;
+        DFS(root, nums, 0, nums.size()-1);
+        return root;
+    }
+
+private:
+    void DFS(TreeNode*& node,
+             std::vector<int>& nums,
+             int begin, int end){
+        if(begin > end) return;
+        int mid = begin + (end - begin)/2;
+        node = new TreeNode(nums[mid]);
+        std::cout<<node->val<<std::endl;
+        DFS(node->left, nums, begin, mid-1);
+        DFS(node->right, nums, mid+1, end); 
+    }
+};
+// @lc code=end
+
+//--------------参考实现-----------------
+class Solution {
+public:
+    TreeNode* sortedArrayToBST(vector<int>& nums) {
+        if(nums.empty()) return nullptr;
+        return DFS(nums, 0, nums.size()-1);
+    }
+
+private:
+    TreeNode* DFS(std::vector<int>& nums,
+                  int begin, int end){
+        if(begin > end) return nullptr;
+        int mid = begin + (end - begin)/2;
+        TreeNode* node = new TreeNode(nums[mid]);
+        // std::cout<<node->val<<std::endl;
+        node->left = DFS(nums, begin, mid-1);
+        node->right = DFS(nums, mid+1, end); 
+        return node;
+    }
+};
+
+```
+
+
+
+
+
+----------------------------------------
+
+---
+
+把二叉搜索树转换为累加树  
+Category	Difficulty	Likes	Dislikes  
+algorithms	Medium (71.05%)	624	-  
+Tags  
+tree  
+
+Companies  
+给出二叉 搜索 树的根节点，该树的节点值各不相同，请你将其转换为累加树（Greater Sum Tree），使每个节点 node 的新值等于原树中大于或等于 node.val 的值之和。  
+
+提醒一下，二叉搜索树满足下列约束条件：  
+
+节点的左子树仅包含键 小于 节点键的节点。  
+节点的右子树仅包含键 大于 节点键的节点。  
+左右子树也必须是二叉搜索树。  
+注意：本题和 1038: https://leetcode-cn.com/problems/  binary-search-tree-to-greater-sum-tree/ 相同  
+
+ 
+
+示例 1：  
+![](../assets/images/chapter06/538-1.png)
+
+
+输入：[4,1,6,0,2,5,7,null,null,null,3,null,null,null,8]  
+输出：[30,36,21,36,35,26,15,null,null,null,33,null,null,null,8]  
+
+
+
+示例 2：
+
+输入：root = [0,null,1]  
+输出：[1,null,1]  
+
+
+
+示例 3：
+
+输入：root = [1,0,2]  
+输出：[3,3,2]  
+
+
+
+示例 4：
+
+输入：root = [3,2,4,1]  
+输出：[7,9,4,10]  
+ 
+
+提示：
+ 
+树中的节点数介于 0 和 104 之间。  
+每个节点的值介于 -104 和 104 之间。  
+树中的所有值 互不相同 。  
+给定的树为二叉搜索树。  
+Discussion | Solution  
+
+-----------------------------------
+
+![](../assets/images/chapter06/538-2.png)
+
+![](../assets/images/chapter06/538-3.png)
+
+![](../assets/images/chapter06/538-4.png)
+
+
+
+```c
+/*
+ * @Date: 2021-12-30 16:17:41
+ * @Author: bFeng
+ */
+/*
+ * @lc app=leetcode.cn id=538 lang=cpp
+ *
+ * [538] 把二叉搜索树转换为累加树
+ */
+
+// @lc code=start
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+ // ----遍历顺序： 右中左------------
+class Solution {
+public:
+    TreeNode* convertBST(TreeNode* root) {
+        int sum = 0;
+        DFS(root, sum);
+        return root;
+    }
+
+private:
+    void DFS(TreeNode* node,
+            int& sum){
+        if(!node) return;
+        DFS(node->right, sum);
+        node->val += sum;
+        sum = node->val;
+        DFS(node->left, sum);
+    }
+};
+// @lc code=end
+```
+
+---
+
+删除二叉搜索树中的节点  
+Category	Difficulty	Likes	Dislikes 
+algorithms	Medium (49.03%)	606	-  
+Tags  
+Companies  
+给定一个二叉搜索树的根节点 root 和一个值 key，删除二叉搜索树中的 key 对应的节点，并保证二叉搜索树的性质不变。返回二叉搜索树（有可能被更新）的根节点的引用。  
+
+一般来说，删除节点可分为两个步骤：  
+
+1.首先找到需要删除的节点；  
+2.如果找到了，删除它。  
+ 
+
+示例 1:  
+
+![](../assets/images/chapter06/450-1.png)
+
+输入：root = [5,3,6,2,4,null,7], key = 3  
+输出：[5,4,6,2,null,null,7]  
+解释：给定需要删除的节点值是 3，所以我们首先找到 3 这个节点，然后删除它。  
+一个正确的答案是 [5,4,6,2,null,null,7], 如下图所示。  
+另一个正确答案是 [5,2,6,null,4,null,7]。  
+
+
+示例 2:  
+
+![](../assets/images/chapter06/450-2.png)
+
+输入: root = [5,3,6,2,4,null,7], key = 0  
+输出: [5,3,6,2,4,null,7]  
+解释: 二叉树不包含值为 0 的节点  
+
+
+
+
+示例 3:  
+
+输入: root = [], key = 0  
+输出: []  
+ 
+
+提示:  
+
+节点数的范围 [0, 104].  
+-105 <= Node.val <= 105  
+节点值唯一  
+root 是合法的二叉搜索树  
+-105 <= key <= 105  
+ 
+
+进阶： 要求算法时间复杂度为 O(h)，h 为树的高度。  
+
+Discussion | Solution  
+
+---------------
+
+
+![](../assets/images/chapter06/450-3.png)
+
+![](../assets/images/chapter06/450-4.png)
+
+![](../assets/images/chapter06/450-5.png)
+
+![](../assets/images/chapter06/450-6.png)
+
+![](../assets/images/chapter06/450-7.png)
+
+![](../assets/images/chapter06/450-8.png)
+
+![](../assets/images/chapter06/450-9.png)
+
+![](../assets/images/chapter06/450-10.png)
+
+![](../assets/images/chapter06/450-11.png)
+
+![](../assets/images/chapter06/450-12.png)
+
+![](../assets/images/chapter06/450-13.png)
+
+![](../assets/images/chapter06/450-14.png)
+
+![](../assets/images/chapter06/450-15.png)
+
+![](../assets/images/chapter06/450-16.jpg)
+
+
+-------------------------
+
+
+```c
+/*
+ * @Date: 2021-12-30 16:50:03
+ * @Author: bFeng
+ */
+/*
+ * @lc app=leetcode.cn id=450 lang=cpp
+ *
+ * [450] 删除二叉搜索树中的节点
+ */
+
+// @lc code=start
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+// 待删除的节点为：
+//  1.叶子节点--直接删除
+//  2.只有左子树或只有右子树--父->子
+//  3.左右子树都有--找前驱或后继进行替换
+class Solution
+{
+public:
+    TreeNode *deleteNode(TreeNode *root, int key){
+        if (!root) return root;
+        TreeNode* parent = nullptr;
+
+        // Step 1 查找待删除节点
+        TreeNode* node = NodeKSearch(root, key, parent);
+        if(!node) return root;  // 没找到
+        // Step 2 删除case 3 
+        if(node->left && node->right){
+            TreeNode* successor = findSuccessor(node, parent);
+            NodeKDelete(successor, parent);// 删除后继节点
+            node->val = successor->val;
+            return root;
+        }
+        // Step 3 删除case 1 2 
+        if(parent){// node非根节点
+            NodeKDelete(node,parent);
+        }else{     // node为根节点
+            // 将 root 设置为左子树或有子树就行
+            if(node->left){
+                root = node->left;
+            }else{
+                root = node->right;
+            }
+        }
+        return root;
+    }
+
+private:
+
+    /**
+     * @description: 查找值为key的节点
+     * @param {*} 函数传入待搜索二叉树的根节点 node 与 key 值
+     * @return {*} 函数返回值为 key 的节点地址与它的父节点地址
+     */    
+    TreeNode* NodeKSearch(TreeNode* node, int key,
+                          TreeNode*& parent)
+    { //注意parent这里是指针的引用，不然传不出去
+        while (node){
+            if (node->val == key){
+                break;
+            }
+            parent = node;
+            if (key < node->val){ // 利用树的性质查找
+                node = node->left;
+            }else{
+                node = node->right;
+            }
+        }
+        return node; //需要return
+    }
+
+
+    /**
+     * @description: 删除节点 case 1 只有左子树或只有右子树
+     *                       case 2 待删节点为叶子节点
+     * @param {TreeNode} *node  待删除节点
+     * @param {TreeNode} *parent 待删除节点父节点
+     */    
+    void NodeKDelete(TreeNode* node, TreeNode* parent){
+        TreeNode *child = nullptr;
+        // case 1 只有左子树或只有右子树--父->子
+        if (node->left && !node->right){
+            child = node->left;
+        }else if (!node->left && node->right){
+            child = node->right;
+        }
+        // 注意这里还隐含了case 2
+        // case 2 待删节点为叶子节点，此时child就是nullptr，赋值给parent就行
+        if (node->val < parent->val){// 左孩子
+            parent->left = child;
+        }else if (node->val > parent->val){
+            parent->right = child;
+        }
+    }
+
+
+    /**
+     * @description:  供 case 3 当node有左右子树 时调用
+     *                node 的后继与后继的父节点查找
+     * @param {TreeNode*} node  待删除节点
+     * @param {TreeNode*&} parent  node 后继节点的父节点，通过引用返回
+     * @return {*} node 的后继者
+     */
+    TreeNode* findSuccessor(TreeNode* node, TreeNode*& parent){
+        TreeNode* child = node->right;// 右拐一次
+        parent = node;
+        while(child -> left){// 然后使劲左拐
+            parent = child;
+            child = child->left;
+        }
+        return child;
+    }
+};
+// @lc code=end
+
+```

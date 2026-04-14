@@ -1,0 +1,45 @@
+// 自定义样式
+
+// 代码块
+pre.highlight {
+  border-radius: 6px;
+  padding: 1rem;
+}
+
+// 图片居中且最大宽度限制
+.main-content img {
+  display: block;
+  margin: 1rem auto;
+  max-width: 100%;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+// 表格样式
+.main-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+
+.main-content th,
+.main-content td {
+  padding: 0.5rem 1rem;
+  border: 1px solid #e1e4e8;
+}
+
+.main-content th {
+  background-color: #f6f8fa;
+  font-weight: 600;
+}
+
+// 章节标题间距
+.main-content h2 {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e1e4e8;
+}
+
+.main-content h2:first-of-type {
+  border-top: none;
+}
